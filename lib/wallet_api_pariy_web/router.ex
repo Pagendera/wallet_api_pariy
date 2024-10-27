@@ -27,6 +27,13 @@ defmodule WalletApiPariyWeb.Router do
     post "/balance", UserController, :show_balance
   end
 
+  scope "/transaction", WalletApiPariyWeb do
+    pipe_through :api
+
+    post "/bet", TransactionController, :create_bet
+    post "/win", TransactionController, :create_win
+  end
+
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:wallet_api_pariy, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put

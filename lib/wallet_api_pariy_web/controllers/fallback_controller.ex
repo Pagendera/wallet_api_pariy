@@ -21,4 +21,10 @@ defmodule WalletApiPariyWeb.FallbackController do
     |> put_view(html: WalletApiPariyWeb.ErrorHTML, json: WalletApiPariyWeb.ErrorJSON)
     |> render(:"404")
   end
+
+  def call(conn, {:error, message}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{error: message})
+  end
 end
