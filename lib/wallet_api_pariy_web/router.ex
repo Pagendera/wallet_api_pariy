@@ -21,9 +21,11 @@ defmodule WalletApiPariyWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", WalletApiPariyWeb do
-  #   pipe_through :api
-  # end
+  scope "/user", WalletApiPariyWeb do
+    pipe_through :api
+
+    post "/balance", UserController, :show_balance
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:wallet_api_pariy, :dev_routes) do
