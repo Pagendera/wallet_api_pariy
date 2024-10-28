@@ -8,10 +8,7 @@ defmodule WalletApiPariyWeb.TransactionJSON do
     %{data: for(transaction <- transactions, do: data(transaction))}
   end
 
-  @doc """
-  Renders a single transaction.
-  """
-  def create_bet(%{transaction: transaction}) do
+  def create_transaction(%{transaction: transaction}) do
     data(transaction)
   end
 

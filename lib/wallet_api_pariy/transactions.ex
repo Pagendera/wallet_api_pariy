@@ -8,22 +8,12 @@ defmodule WalletApiPariy.Transactions do
 
   alias WalletApiPariy.Transactions.Transaction
   alias WalletApiPariy.Users
-
-  @doc """
-  Gets a single transaction.
-
-  Raises `Ecto.NoResultsError` if the Transaction does not exist.
-
-  ## Examples
-
-      iex> get_transaction!(123)
-      %Transaction{}
-
-      iex> get_transaction!(456)
-      ** (Ecto.NoResultsError)
-
-  """
+  
   def get_transaction(id), do: Repo.get(Transaction, id)
+
+  def get_transaction_by_uuid(uuid) do
+    Repo.get_by(Transaction, uuid: uuid)
+  end
 
   def create_transaction(attrs \\ %{}) do
     %Transaction{}
@@ -56,36 +46,44 @@ defmodule WalletApiPariy.Transactions do
     end
   end
 
-  @doc """
-  Updates a transaction.
+  def create_win(
+    %{"user" => name, "amount" => amount, "transaction_uuid" => uuid, "reference_transaction_uuid" => ref_uuid} = attrs \\ %{}
+  ) do
+    with user when not is_nil(user) <- Users.get_user_by_name(name),
+         ref_transaction when not is_nil(ref_transaction) <- get_transaction_by_uuid(ref_uuid),
+         false <- ref_transaction.is_closed,
+         true <- ref_transaction.user_id == user.id do
 
-  ## Examples
+      Repo.transaction(fn ->
+        Users.update_user(user, %{balance: user.balance + amount})
+        update_transaction(ref_transaction, %{"is_closed" => true})
 
-      iex> update_transaction(transaction, %{field: new_value})
-      {:ok, %Transaction{}}
+        transaction_attrs =
+          Map.merge(attrs, %{"user_id" => user.id, "uuid" => uuid, "is_closed" => true})
 
-      iex> update_transaction(transaction, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+        case create_transaction(transaction_attrs) do
+          {:ok, transaction} ->
+            Repo.preload(transaction, :user)
 
-  """
+          {:error, changeset} ->
+            Repo.rollback(changeset)
+        end
+      end)
+
+    else
+      nil -> {:error, "User not found"}
+      ref_transaction when is_nil(ref_transaction) or ref_transaction.is_closed -> {:error, "Reference transaction not found or closed"}
+      true -> {:error, "Reference transaction is closed"}
+      _ -> {:error, "User does not match the reference transaction"}
+    end
+  end
+
   def update_transaction(%Transaction{} = transaction, attrs) do
     transaction
     |> Transaction.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a transaction.
-
-  ## Examples
-
-      iex> delete_transaction(transaction)
-      {:ok, %Transaction{}}
-
-      iex> delete_transaction(transaction)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
     Transaction.changeset(transaction, attrs)
   end

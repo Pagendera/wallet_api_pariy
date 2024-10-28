@@ -1,5 +1,6 @@
 defmodule WalletApiPariyWeb.Router do
   use WalletApiPariyWeb, :router
+  import Plug.BasicAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,6 +13,7 @@ defmodule WalletApiPariyWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :basic_auth, username: "admin", password: "admin"
   end
 
   scope "/", WalletApiPariyWeb do

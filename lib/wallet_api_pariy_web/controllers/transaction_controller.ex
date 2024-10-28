@@ -9,8 +9,14 @@ defmodule WalletApiPariyWeb.TransactionController do
   def create_bet(conn, transaction_params) do
     with {:ok, %Transaction{} = transaction} <- Transactions.create_bet(transaction_params) do
       conn
-      |> put_status(:created)
-      |> render(:create_bet, transaction: transaction)
+      |> render(:create_transaction, transaction: transaction)
+    end
+  end
+
+  def create_win(conn, transaction_params) do
+    with {:ok, %Transaction{} = transaction} <- Transactions.create_win(transaction_params) do
+      conn
+      |> render(:create_transaction, transaction: transaction)
     end
   end
 
