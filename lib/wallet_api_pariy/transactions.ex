@@ -8,6 +8,7 @@ defmodule WalletApiPariy.Transactions do
 
   alias WalletApiPariy.Transactions.Transaction
   alias WalletApiPariy.Users
+  alias WalletApiPariy.Users.User
 
   def get_transaction(id), do: Repo.get(Transaction, id)
 
@@ -22,58 +23,74 @@ defmodule WalletApiPariy.Transactions do
   end
 
   def create_bet(%{"user" => name, "amount" => amount, "transaction_uuid" => uuid} = attrs \\ %{}) do
-    with user when not is_nil(user) <- Users.get_user_by_name(name),
-         true <- user.balance >= amount do
+    case Users.get_user_by_name(name) do
+      nil ->
+        {:error, %{message: "User not found", status: "RS_ERROR_USER_NOT_FOUND"}}
 
-      Repo.transaction(fn ->
-        Users.update_user(user, %{balance: user.balance - amount})
+      {:error, %{message: "Name must be a string", status: "RS_ERROR_WRONG_TYPES"}} = error ->
+        error
 
-        transaction_attrs =
-          Map.merge(attrs, %{"user_id" => user.id, "uuid" => uuid})
+      %User{} ->
+        with user when not is_nil(user) <- Users.get_user_by_name(name),
+            true <- user.balance >= amount do
 
-        case create_transaction(transaction_attrs) do
-          {:ok, transaction} ->
-            Repo.preload(transaction, :user)
+          Repo.transaction(fn ->
+            Users.update_user(user, %{balance: user.balance - amount})
 
-          {:error, changeset} ->
-            Repo.rollback(changeset)
+            transaction_attrs =
+              Map.merge(attrs, %{"user_id" => user.id, "uuid" => uuid})
+
+            case create_transaction(transaction_attrs) do
+              {:ok, transaction} ->
+                Repo.preload(transaction, :user)
+
+              {:error, changeset} ->
+                Repo.rollback(changeset)
+            end
+          end)
+
+        else
+          false -> {:error, %{message: "Insufficient balance", status: "RS_ERROR_NOT_ENOUGH_MONEY"}}
         end
-      end)
-
-    else
-      nil -> {:error, %{message: "User not found", status: "RS_ERROR_USER_DISABLED"}}
-      false -> {:error, %{message: "Insufficient balance", status: "RS_ERROR_NOT_ENOUGH_MONEY"}}
-    end
+      end
   end
 
   def create_win(
-    %{"user" => name, "amount" => amount, "transaction_uuid" => uuid, "reference_transaction_uuid" => ref_uuid} = attrs \\ %{}
+  %{"user" => name, "amount" => amount, "transaction_uuid" => uuid, "reference_transaction_uuid" => ref_uuid} = attrs \\ %{}
   ) do
-    with user when not is_nil(user) <- Users.get_user_by_name(name),
-         ref_transaction when not is_nil(ref_transaction) <- get_transaction_by_uuid(ref_uuid),
-         false <- ref_transaction.is_closed,
-         true <- ref_transaction.user_id == user.id do
+    case Users.get_user_by_name(name) do
+      nil ->
+        {:error, %{message: "User not found", status: "RS_ERROR_USER_NOT_FOUND"}}
 
-      Repo.transaction(fn ->
-        Users.update_user(user, %{balance: user.balance + amount})
-        update_transaction(ref_transaction, %{"is_closed" => true})
+      {:error, %{message: "Name must be a string", status: "RS_ERROR_WRONG_TYPES"}} = error ->
+        error
 
-        transaction_attrs =
-          Map.merge(attrs, %{"user_id" => user.id, "uuid" => uuid, "is_closed" => true})
+      %User{} = user ->
+        with ref_transaction when not is_nil(ref_transaction) <- get_transaction_by_uuid(ref_uuid),
+             false <- ref_transaction.is_closed,
+             true <- ref_transaction.user_id == user.id do
 
-        case create_transaction(transaction_attrs) do
-          {:ok, transaction} ->
-            Repo.preload(transaction, :user)
+          Repo.transaction(fn ->
+            Users.update_user(user, %{balance: user.balance + amount})
+            update_transaction(ref_transaction, %{"is_closed" => true})
 
-          {:error, changeset} ->
-            Repo.rollback(changeset)
+            transaction_attrs =
+              Map.merge(attrs, %{"user_id" => user.id, "uuid" => uuid, "is_closed" => true})
+
+            case create_transaction(transaction_attrs) do
+              {:ok, transaction} ->
+                Repo.preload(transaction, :user)
+
+              {:error, changeset} ->
+                Repo.rollback(changeset)
+            end
+          end)
+
+        else
+          nil -> {:error, %{message: "Reference transaction not found", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}}
+          true -> {:error, %{message: "Reference transaction is closed", status: "RS_ERROR_DUPLICATE_TRANSACTION"}}
+          _ -> {:error, %{message: "User does not match the reference transaction", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}}
         end
-      end)
-
-    else
-      nil -> {:error, %{message: "Reference transaction not found", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}}
-      true -> {:error, %{message: "Reference transaction is closed", status: "RS_ERROR_DUPLICATE_TRANSACTION"}}
-      _ -> {:error, %{message: "User does not match the reference transaction", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}}
     end
   end
 
@@ -81,9 +98,5 @@ defmodule WalletApiPariy.Transactions do
     transaction
     |> Transaction.changeset(attrs)
     |> Repo.update()
-  end
-
-  def change_transaction(%Transaction{} = transaction, attrs \\ %{}) do
-    Transaction.changeset(transaction, attrs)
   end
 end

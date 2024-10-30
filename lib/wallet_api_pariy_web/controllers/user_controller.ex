@@ -12,4 +12,10 @@ defmodule WalletApiPariyWeb.UserController do
       |> render(:show_balance, user: user)
     end
   end
+
+  def show_balance(conn, _) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{error: "Invalid request", status: "RS_UNKNOWN"})
+  end
 end
