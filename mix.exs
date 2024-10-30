@@ -59,7 +59,8 @@ defmodule WalletApiPariy.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:basic_auth, "~> 2.2.2"}
+      {:basic_auth, "~> 2.2.2"},
+      {:ex_machina, "~> 2.7", only: :test}
     ]
   end
 

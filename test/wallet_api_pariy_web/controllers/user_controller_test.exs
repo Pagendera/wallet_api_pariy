@@ -1,32 +1,39 @@
 defmodule WalletApiPariyWeb.UserControllerTest do
   use WalletApiPariyWeb.ConnCase
+  import WalletApiPariy.Factory
 
-  alias WalletApiPariy.Users.User
+  @username Application.compile_env(:wallet_api_pariy, :basic_auth)[:username]
+  @password Application.compile_env(:wallet_api_pariy, :basic_auth)[:password]
 
-  @create_attrs %{
-    user: "some user",
-    balance: "1200",
-    currency: "some currency"
-  }
-  @invalid_attrs %{user: nil, balance: nil, currency: nil}
+  describe "show_balance/2" do
+    test "renders user balance when user exists", %{conn: conn} do
+      insert(:user, name: "Alice", balance: 500)
 
-  setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+      conn =
+        conn
+        |> using_basic_auth(@username, @password)
+        |> post(~p"/user/balance", %{"user" => "Alice"})
+
+      assert json_response(conn, 200)["user"] == "Alice"
+      assert json_response(conn, 200)["balance"] == 500
+      assert json_response(conn, 200)["status"] == "RS_OK"
+    end
+
+    test "creates user with default balance when user does not exist", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth(@username, @password)
+        |> post(~p"/user/balance", %{"user" => "Bob"})
+
+      assert json_response(conn, 200)["user"] == "Bob"
+      assert json_response(conn, 200)["balance"] == 1000
+      assert json_response(conn, 200)["status"] == "RS_OK"
+    end
   end
 
-  describe "create user" do
-    test "renders user when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/api/users", user: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
 
-      conn = get(conn, ~p"/api/users/#{id}")
-
-      assert %{
-               "id" => ^id,
-               "balance" => "120.5",
-               "currency" => "some currency",
-               "user" => "some user"
-             } = json_response(conn, 200)["data"]
-    end
+  defp using_basic_auth(conn, username, password) do
+    header_content = "Basic " <> Base.encode64("#{username}:#{password}")
+    put_req_header(conn, "authorization", header_content)
   end
 end

@@ -2,6 +2,9 @@ defmodule WalletApiPariyWeb.Router do
   use WalletApiPariyWeb, :router
   import Plug.BasicAuth
 
+  @username Application.compile_env(:wallet_api_pariy, :basic_auth)[:username]
+  @password Application.compile_env(:wallet_api_pariy, :basic_auth)[:password]
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -13,7 +16,7 @@ defmodule WalletApiPariyWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug :basic_auth, username: "admin", password: "admin"
+    plug :basic_auth, username: @username, password: @password
   end
 
   scope "/", WalletApiPariyWeb do

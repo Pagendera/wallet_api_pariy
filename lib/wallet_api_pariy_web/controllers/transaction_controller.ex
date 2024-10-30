@@ -19,12 +19,4 @@ defmodule WalletApiPariyWeb.TransactionController do
       |> render(:create_transaction, transaction: transaction)
     end
   end
-
-  def update(conn, %{"id" => id, "transaction" => transaction_params}) do
-    transaction = Transactions.get_transaction(id)
-
-    with {:ok, %Transaction{} = transaction} <- Transactions.update_transaction(transaction, transaction_params) do
-      render(conn, :show, transaction: transaction)
-    end
-  end
 end

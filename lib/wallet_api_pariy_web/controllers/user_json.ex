@@ -8,6 +8,7 @@ defmodule WalletApiPariyWeb.UserJSON do
   defp data_balance(%User{} = user) do
     %{
       user: user.name,
+      status: "RS_OK",
       currency: user.currency,
       balance: user.balance
     }

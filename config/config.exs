@@ -11,6 +11,10 @@ config :wallet_api_pariy,
   ecto_repos: [WalletApiPariy.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :wallet_api_pariy, :basic_auth,
+  username: "admin",
+  password: "admin"
+
 # Configures the endpoint
 config :wallet_api_pariy, WalletApiPariyWeb.Endpoint,
   url: [host: "localhost"],

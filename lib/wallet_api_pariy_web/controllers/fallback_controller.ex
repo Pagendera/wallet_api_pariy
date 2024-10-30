@@ -22,9 +22,15 @@ defmodule WalletApiPariyWeb.FallbackController do
     |> render(:"404")
   end
 
+  def call(conn, {:error, %{message: message, status: status}}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{error: message, status: status})
+  end
+
   def call(conn, {:error, message}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> json(%{error: message})
+    |> json(%{error: message, status: "RS_ERROR_UNKNOWN"})
   end
 end

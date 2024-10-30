@@ -17,6 +17,7 @@ defmodule WalletApiPariyWeb.TransactionJSON do
 
     %{
       user: user.name,
+      status: "RS_OK",
       currency: user.currency,
       balance: user.balance
     }

@@ -8,7 +8,7 @@ defmodule WalletApiPariy.Transactions do
 
   alias WalletApiPariy.Transactions.Transaction
   alias WalletApiPariy.Users
-  
+
   def get_transaction(id), do: Repo.get(Transaction, id)
 
   def get_transaction_by_uuid(uuid) do
@@ -41,8 +41,8 @@ defmodule WalletApiPariy.Transactions do
       end)
 
     else
-      nil -> {:error, "User not found"}
-      false -> {:error, "Insufficient balance"}
+      nil -> {:error, %{message: "User not found", status: "RS_ERROR_USER_DISABLED"}}
+      false -> {:error, %{message: "Insufficient balance", status: "RS_ERROR_NOT_ENOUGH_MONEY"}}
     end
   end
 
@@ -71,10 +71,9 @@ defmodule WalletApiPariy.Transactions do
       end)
 
     else
-      nil -> {:error, "User not found"}
-      ref_transaction when is_nil(ref_transaction) or ref_transaction.is_closed -> {:error, "Reference transaction not found or closed"}
-      true -> {:error, "Reference transaction is closed"}
-      _ -> {:error, "User does not match the reference transaction"}
+      nil -> {:error, %{message: "Reference transaction not found", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}}
+      true -> {:error, %{message: "Reference transaction is closed", status: "RS_ERROR_DUPLICATE_TRANSACTION"}}
+      _ -> {:error, %{message: "User does not match the reference transaction", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}}
     end
   end
 

@@ -10,12 +10,15 @@ defmodule WalletApiPariy.Users do
   @default_currency "EUR"
   @default_balance 1000
 
+  def default_currency, do: @default_currency
+  def default_balance, do: @default_balance
+
   def get_user_by_name(name) when is_binary(name) do
     Repo.one(from u in User, where: u.name == ^name)
   end
 
   def get_user_by_name(_name) do
-    {:error, "Name must be a string"}
+    {:error, %{message: "Name must be a string", status: "RS_ERROR_WRONG_TYPES"}}
   end
 
   def get_balance(name) when is_binary(name) do
@@ -28,7 +31,7 @@ defmodule WalletApiPariy.Users do
   end
 
   def get_balance(_name) do
-    {:error, "Name must be a string"}
+    {:error, %{message: "Name must be a string", status: "RS_ERROR_WRONG_TYPES"}}
   end
 
   def create_user(attrs \\ %{}) do
