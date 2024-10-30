@@ -25,7 +25,7 @@ defmodule WalletApiPariy.Transactions do
   def create_bet(%{"user" => name, "amount" => amount, "transaction_uuid" => uuid} = attrs \\ %{}) do
     case Users.get_user_by_name(name) do
       nil ->
-        {:error, %{message: "User not found", status: "RS_ERROR_USER_NOT_FOUND"}}
+        {:error, %{message: "User not found", status: "RS_ERROR_USER_DISABLED"}}
 
       {:error, %{message: "Name must be a string", status: "RS_ERROR_WRONG_TYPES"}} = error ->
         error
@@ -60,7 +60,7 @@ defmodule WalletApiPariy.Transactions do
   ) do
     case Users.get_user_by_name(name) do
       nil ->
-        {:error, %{message: "User not found", status: "RS_ERROR_USER_NOT_FOUND"}}
+        {:error, %{message: "User not found", status: "RS_ERROR_USER_DISABLED"}}
 
       {:error, %{message: "Name must be a string", status: "RS_ERROR_WRONG_TYPES"}} = error ->
         error

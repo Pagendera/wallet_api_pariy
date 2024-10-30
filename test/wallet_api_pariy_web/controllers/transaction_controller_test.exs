@@ -15,7 +15,8 @@ defmodule WalletApiPariyWeb.TransactionControllerTest do
       transaction_params = %{
         "user" => user.name,
         "amount" => 200,
-        "transaction_uuid" => Ecto.UUID.generate()
+        "transaction_uuid" => Ecto.UUID.generate(),
+        "currency" => "EUR"
       }
 
       conn =
@@ -32,7 +33,8 @@ defmodule WalletApiPariyWeb.TransactionControllerTest do
       transaction_params = %{
         "user" => "Unknown User",
         "amount" => 200,
-        "transaction_uuid" => Ecto.UUID.generate()
+        "transaction_uuid" => Ecto.UUID.generate(),
+        "currency" => "EUR"
       }
 
       conn =
@@ -47,8 +49,9 @@ defmodule WalletApiPariyWeb.TransactionControllerTest do
     test "returns an error when insufficient balance", %{conn: conn, user: user} do
       transaction_params = %{
         "user" => user.name,
-        "amount" => 600,  # Exceeds user balance
-        "transaction_uuid" => Ecto.UUID.generate()
+        "amount" => 600,
+        "transaction_uuid" => Ecto.UUID.generate(),
+        "currency" => "EUR"
       }
 
       conn =
@@ -78,7 +81,8 @@ defmodule WalletApiPariyWeb.TransactionControllerTest do
         "user" => user.name,
         "amount" => 150,
         "transaction_uuid" => Ecto.UUID.generate(),
-        "reference_transaction_uuid" => bet_transaction.uuid
+        "reference_transaction_uuid" => bet_transaction.uuid,
+        "currency" => "EUR"
       }
 
       conn =
@@ -92,10 +96,11 @@ defmodule WalletApiPariyWeb.TransactionControllerTest do
 
     test "returns an error when reference transaction not found", %{conn: conn} do
       win_params = %{
-        "user" => "Some User",
+        "user" => "Alice",
         "amount" => 150,
         "transaction_uuid" => Ecto.UUID.generate(),
-        "reference_transaction_uuid" => Ecto.UUID.generate()
+        "reference_transaction_uuid" => Ecto.UUID.generate(),
+        "currency" => "EUR"
       }
 
       conn =
@@ -114,7 +119,8 @@ defmodule WalletApiPariyWeb.TransactionControllerTest do
         "user" => "Alice",
         "amount" => 150,
         "transaction_uuid" => Ecto.UUID.generate(),
-        "reference_transaction_uuid" => bet_transaction.uuid
+        "reference_transaction_uuid" => bet_transaction.uuid,
+        "currency" => "EUR"
       }
 
       conn =

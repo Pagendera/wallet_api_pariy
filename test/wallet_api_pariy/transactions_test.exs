@@ -81,7 +81,7 @@ defmodule WalletApiPariy.TransactionsTest do
       uuid = Ecto.UUID.generate()
       attrs = %{"user" => "NonExistentUser", "amount" => 100, "transaction_uuid" => uuid, "reference_transaction_uuid" => uuid}
 
-      assert {:error, %{message: "Reference transaction not found", status: "RS_ERROR_TRANSACTION_DOES_NOT_EXIST"}} = Transactions.create_win(attrs)
+      assert {:error, %{message: "User not found", status: "RS_ERROR_USER_DISABLED"}} = Transactions.create_win(attrs)
     end
   end
 end
