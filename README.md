@@ -46,7 +46,7 @@ This project implements a Wallet API that allows users to check their balance, p
     "user": "username",
     "amount": 100,
     "currency": "EUR",
-    "transaction_uuid": "8d523c64-13ff-4345-bb34-87849d169c79",
+    "transaction_uuid": "8d523c64-13ff-4345-bb34-87849d169c79"
   }
 
 ### Transaction Win
