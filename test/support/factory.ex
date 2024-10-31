@@ -1,4 +1,6 @@
 defmodule WalletApiPariy.Factory do
+  @moduledoc false
+
   use ExMachina.Ecto, repo: WalletApiPariy.Repo
 
   def user_factory do
