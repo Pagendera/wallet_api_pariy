@@ -60,7 +60,7 @@ This project implements a Wallet API that allows users to check their balance, p
     "amount": 100,
     "currency": "EUR",
     "transaction_uuid": "d82ab361-7a98-4bdf-a5b0-9be2e33002e5",
-    "reference_uuid": "8d523c64-13ff-4345-bb34-87849d169c79"
+    "reference_transaction_uuid": "8d523c64-13ff-4345-bb34-87849d169c79"
   }
 
  **Note**: Don't forget to go through basic authentication to access endpoints with `username: admin password: admin`
