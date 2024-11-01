@@ -8,7 +8,7 @@ defmodule WalletApiPariy.Users do
   alias WalletApiPariy.Users.User
 
   @default_currency "EUR"
-  @default_balance 1000
+  @default_balance 1000 * 100_000
 
   def default_currency, do: @default_currency
   def default_balance, do: @default_balance

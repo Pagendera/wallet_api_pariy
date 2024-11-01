@@ -43,7 +43,7 @@ This project implements a Wallet API that allows users to check their balance, p
   ```json
   {
     "user": "username",
-    "amount": 100,
+    "amount": 100500,
     "currency": "EUR",
     "transaction_uuid": "uuid",
   }
@@ -56,7 +56,7 @@ This project implements a Wallet API that allows users to check their balance, p
   ```json
   {
     "user": "username",
-    "amount": 100,
+    "amount": 100500,
     "currency": "EUR",
     "transaction_uuid": "uuid",
     "reference_uuid": "reference_uuid"
