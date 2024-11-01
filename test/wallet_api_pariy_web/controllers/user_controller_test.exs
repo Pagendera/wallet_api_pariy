@@ -2,6 +2,8 @@ defmodule WalletApiPariyWeb.UserControllerTest do
   use WalletApiPariyWeb.ConnCase
   import WalletApiPariy.Factory
 
+  alias WalletApiPariy.Users 
+
   @username Application.compile_env(:wallet_api_pariy, :basic_auth)[:username]
   @password Application.compile_env(:wallet_api_pariy, :basic_auth)[:password]
 
@@ -26,7 +28,7 @@ defmodule WalletApiPariyWeb.UserControllerTest do
         |> post(~p"/user/balance", %{"user" => "Bob"})
 
       assert json_response(conn, 200)["user"] == "Bob"
-      assert json_response(conn, 200)["balance"] == 1000
+      assert json_response(conn, 200)["balance"] == Users.default_balance()
       assert json_response(conn, 200)["status"] == "RS_OK"
     end
   end
