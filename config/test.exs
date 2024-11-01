@@ -10,7 +10,7 @@ config :wallet_api_pariy, WalletApiPariy.Repo,
   password: "postgres",
   hostname: "localhost",
   database: "wallet_api_pariy_test#{System.get_env("MIX_TEST_PARTITION")}",
-  port: 5434,
+  port: 5432,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 

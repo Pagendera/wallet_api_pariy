@@ -19,9 +19,10 @@ This project implements a Wallet API that allows users to check their balance, p
 ## Installation and testing
 
 1. **Clone the Repository**
-2. **Run `mix setup` to install and setup dependencies**
-3. **Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`**
-4. **Test API through Postman (use http://localhost:4000 endpoint)**
+2. **Run** `docker compose up -d` This will start the necessary database containers in the background.
+3. **Run `mix setup` to install and setup dependencies**
+4. **Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`**
+5. **Test API through Postman (use http://localhost:4000 endpoint)**
 
 ## API Endpoints
 
@@ -45,7 +46,7 @@ This project implements a Wallet API that allows users to check their balance, p
     "user": "username",
     "amount": 100500,
     "currency": "EUR",
-    "transaction_uuid": "uuid",
+    "transaction_uuid": "8d523c64-13ff-4345-bb34-87849d169c79"
   }
 
 ### Transaction Win
@@ -58,11 +59,11 @@ This project implements a Wallet API that allows users to check their balance, p
     "user": "username",
     "amount": 100500,
     "currency": "EUR",
-    "transaction_uuid": "uuid",
-    "reference_uuid": "reference_uuid"
+    "transaction_uuid": "d82ab361-7a98-4bdf-a5b0-9be2e33002e5",
+    "reference_transaction_uuid": "8d523c64-13ff-4345-bb34-87849d169c79"
   }
 
- **Note**: Don't forget to go through basic authentication to access endpoints with ```username: admin password: admin```
+ **Note**: Don't forget to go through basic authentication to access endpoints with `username: admin password: admin`
   
 ### Testing
 To run the test, use: `mix test` command.
